@@ -1,0 +1,36 @@
+name: "Vulnerability scanner for Go"
+description: "Check your Go code for known vulnerabilities"
+author: "Florian Lehner"
+inputs:
+  install-go:
+    description: |
+      Let the action install a version of Go. If set to false, the action expects you to
+      have installed Go already. By default Go 1.19 will be installed.
+    required: false
+    default: true
+  working-directory:
+    description: |
+      Path to the working directory govulncheck should be executed in.
+    required: false
+    default: "."
+  govulncheck-version:
+    description: |
+      Specify a verion of govulncheck to install. By default latest will be used.
+    required: false
+    default: "latest"
+runs:
+  using: "composite"
+  steps:
+    - id: install_go
+      if: ${{ inputs.install-go != 'false' }}
+      uses: actions/setup-go@v3
+      with:
+        go-version: "1.19"
+    - env:
+      govulncheck-version: ${{ inputs.govulncheck-version}}
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        go install "golang.org/x/vuln/cmd/govulncheck@${govulncheck-version}"
+        cd ${working-directory}
+        $(go env GOPATH)/bin/govulncheck ./...
+      shell: bash

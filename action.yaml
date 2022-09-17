@@ -18,6 +18,21 @@ inputs:
       Specify a verion of govulncheck to install. By default latest will be used.
     required: false
     default: "latest"
+  govulncheck-json:
+    description: |
+      Provide JSON output instead of standard text.
+    required: false
+    default: false
+  govulncheck-verbose:
+    description: |
+      Print a full call stack for each identified vulnerability.
+    required: false
+    default: false
+  govulncheck-tags:
+    description: |
+      Comma-seprated list of Go build tags.
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -27,10 +42,23 @@ runs:
       with:
         go-version: "1.19"
     - env:
-      govulncheck-version: ${{ inputs.govulncheck-version}}
-      working-directory: ${{ inputs.working-directory }}
+        json: ${{ inputs.govulncheck-json }}
+        tags: ${{ inputs.govulncheck-tags }}
+        verbose: ${{ inputs.govulncheck-verbose }}
+        version: ${{ inputs.govulncheck-version}}
+        working-directory: ${{ inputs.working-directory }}
+        flags: ""
       run: |
-        go install "golang.org/x/vuln/cmd/govulncheck@${govulncheck-version}"
+        if [[ "${json}" != "false" ]] ; then
+          flags+=" -json"
+        fi
+        if [ -z "${tags}" ] ; then
+          flags+=" -tags ${tags}"
+        fi
+        if [[ "${verbose}" != "false" ]] ; then
+          flags+=" -v"
+        fi
+        go install "golang.org/x/vuln/cmd/govulncheck@${version}"
         cd ${working-directory}
         $(go env GOPATH)/bin/govulncheck ./...
       shell: bash

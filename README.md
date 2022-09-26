@@ -19,10 +19,10 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
-    - uses: florianl/govulncheck-action@latest
+    - uses: florianl/govulncheck-action@v0.0.3
 ```
 
 A more advanced example that includes call stacks and provides a JSON output might look like this:
@@ -39,10 +39,10 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
-    - uses: florianl/govulncheck-action@latest
+    - uses: florianl/govulncheck-action@v0.0.3
       with:
         govulncheck-json: true
         govulncheck-verbose: true
@@ -55,7 +55,7 @@ Let the action install a version of Go. If set to false, the action expects you 
 already. By default Go 1.19 will be installed.
 
 ### `working-directory`
-Path to the working directory govulncheck should be executed in.
+Optional path to the working directory govulncheck should be executed in.
 
 ### `govulncheck-json`
 Provide JSON output instead of standard text.

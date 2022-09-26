@@ -12,7 +12,7 @@ inputs:
     description: |
       Path to the working directory govulncheck should be executed in.
     required: false
-    default: "."
+    default: ""
   govulncheck-version:
     description: |
       Specify a verion of govulncheck to install. By default latest will be used.
@@ -58,7 +58,9 @@ runs:
         if [[ "${verbose}" != "false" ]] ; then
           flags+=" -v"
         fi
+        if [ -z "${working-directory}" ] ; then
+          cd ${working-directory}
+        fi
         go install "golang.org/x/vuln/cmd/govulncheck@${version}"
-        cd ${working-directory}
         $(go env GOPATH)/bin/govulncheck ./...
       shell: bash
